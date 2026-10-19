@@ -20,13 +20,14 @@ import {
   Copy,
   Check
 } from 'lucide-react';
-import { runCrawler, localizeCustomArticle, fetchStats, fetchConfig, fetchSettings, updateSettings } from '../services/api';
+import { runCrawler, localizeCustomArticle, fetchStats, fetchConfig, fetchSettings, updateSettings, fetchArticles } from '../services/api';
 
 export default function AdminStudio({ onClose, onDataRefresh, currentLang = 'te' }) {
   const [stats, setStats] = useState(null);
   const [config, setConfig] = useState(null);
   const [isCrawling, setIsCrawling] = useState(false);
   const [crawlMessage, setCrawlMessage] = useState('');
+  const [recentCrawled, setRecentCrawled] = useState([]);
   
   // Custom Ingestion State
   const [customUrl, setCustomUrl] = useState('');
@@ -46,10 +47,16 @@ export default function AdminStudio({ onClose, onDataRefresh, currentLang = 'te'
 
   const loadData = async () => {
     try {
-      const [s, c, setts] = await Promise.all([fetchStats(), fetchConfig(), fetchSettings()]);
-      if (s.success) setStats(s.stats);
+      const [s, c, setts, arts] = await Promise.all([
+        fetchStats(), 
+        fetchConfig(), 
+        fetchSettings(),
+        fetchArticles({ limit: 4 }).catch(() => null)
+      ]);
+      if (s?.success) setStats(s.stats);
       if (c) setConfig(c);
-      if (setts.success) setSettings(setts.settings);
+      if (setts?.success) setSettings(setts.settings);
+      if (arts?.articles) setRecentCrawled(arts.articles);
     } catch (e) {
       console.error('Error loading admin data:', e);
     }
@@ -71,7 +78,7 @@ export default function AdminStudio({ onClose, onDataRefresh, currentLang = 'te'
 
   const handleTriggerCrawl = async () => {
     setIsCrawling(true);
-    setCrawlMessage('Autonomous Agent is crawling entertainment feeds & analyzing virality...');
+    setCrawlMessage('AI Agent is fetching live RSS wires (Indian Express, Bollywood Hungama, TOI, Variety)...');
     try {
       const res = await runCrawler({ limitPerSource: 3 });
       setCrawlMessage(res.message || 'Crawl and localization finished successfully!');
@@ -223,6 +230,27 @@ export default function AdminStudio({ onClose, onDataRefresh, currentLang = 'te'
                 ))}
               </div>
             </div>
+
+            {/* Live Ingested Stories Preview */}
+            {recentCrawled.length > 0 && (
+              <div className="space-y-2 pt-3 border-t border-slate-800">
+                <div className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Flame className="w-3.5 h-3.5 fill-amber-400" />
+                  Latest Ingested Stories (Live in Database):
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {recentCrawled.slice(0, 4).map((item) => (
+                    <div key={item.id} className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center space-x-3">
+                      <img src={item.imageUrl} alt="" className="w-12 h-12 rounded-lg object-cover bg-slate-950 shrink-0" />
+                      <div className="truncate">
+                        <div className="text-[10px] text-rose-400 font-bold uppercase">{item.category} • {item.sourceName}</div>
+                        <div className="text-xs font-bold text-white truncate mt-0.5">{item.localized?.te?.title || item.originalTitle}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Custom Ingestion & Translation Sandbox */}
