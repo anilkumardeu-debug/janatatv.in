@@ -1,6 +1,13 @@
 import axios from 'axios';
 import { FALLBACK_ARTICLES } from './fallbackData';
 import { crawlLiveWebFeeds } from './clientCrawler';
+import { 
+  fetchArticlesFromFirestore, 
+  saveArticleToFirestore, 
+  updateArticleInFirestore, 
+  deleteArticleFromFirestore, 
+  incrementReactionInFirestore 
+} from './firestoreService';
 
 const API_BASE = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) || '/api';
 
@@ -85,7 +92,26 @@ export async function fetchArticles({ category = 'All', search = '', language = 
     }
     throw new Error('Invalid JSON from server');
   } catch (error) {
-    // Client-side fallback from localStorage
+    // 1. Try Cloud Firestore first
+    try {
+      const firestoreArticles = await fetchArticlesFromFirestore({ category, limit });
+      if (Array.isArray(firestoreArticles) && firestoreArticles.length > 0) {
+        saveLocalArticles(firestoreArticles);
+        let filtered = [...firestoreArticles];
+        if (search) {
+          const q = search.toLowerCase();
+          filtered = filtered.filter(a => 
+            (a.localized?.[language]?.title || a.originalTitle || '').toLowerCase().includes(q) ||
+            (a.tags || []).some(t => t.toLowerCase().includes(q))
+          );
+        }
+        return { success: true, count: filtered.length, articles: filtered, source: 'firestore' };
+      }
+    } catch (e) {
+      // Ignore and proceed to local storage fallback
+    }
+
+    // 2. Client-side fallback from localStorage
     let all = getLocalArticles();
     let filtered = [...all];
     if (category && category !== 'All') {
@@ -121,79 +147,88 @@ export async function fetchArticleById(id) {
 }
 
 export async function createArticle(articleData) {
+  const newArt = {
+    ...articleData,
+    id: articleData.id || `art-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+    publishedAt: articleData.publishedAt || new Date().toISOString(),
+    reactions: articleData.reactions || { fire: 0, shock: 0, laugh: 0, sad: 0, popcorn: 0 },
+    status: articleData.status || 'published'
+  };
+
+  // Sync to Cloud Firestore in background
+  saveArticleToFirestore(newArt).catch(() => null);
+
   try {
     const response = await axios.post(`${API_BASE}/articles`, articleData);
     if (isJsonResponse(response) && response.data.success) {
       return response.data;
     }
-    throw new Error('Invalid response');
-  } catch (error) {
-    const all = getLocalArticles();
-    const newArt = {
-      ...articleData,
-      id: articleData.id || `art-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-      publishedAt: articleData.publishedAt || new Date().toISOString(),
-      reactions: articleData.reactions || { fire: 0, shock: 0, laugh: 0, sad: 0, popcorn: 0 },
-      status: articleData.status || 'published'
-    };
-    all.unshift(newArt);
-    saveLocalArticles(all);
-    return { success: true, article: newArt };
-  }
+  } catch (error) {}
+
+  const all = getLocalArticles();
+  all.unshift(newArt);
+  saveLocalArticles(all);
+  return { success: true, article: newArt };
 }
 
 export async function updateArticle(id, articleData) {
+  // Sync to Cloud Firestore in background
+  updateArticleInFirestore(id, articleData).catch(() => null);
+
   try {
     const response = await axios.put(`${API_BASE}/articles/${id}`, articleData);
     if (isJsonResponse(response) && response.data.success) {
       return response.data;
     }
-    throw new Error('Invalid response');
-  } catch (error) {
-    const all = getLocalArticles();
-    const idx = all.findIndex(a => a.id === id);
-    if (idx !== -1) {
-      all[idx] = { ...all[idx], ...articleData };
-      saveLocalArticles(all);
-      return { success: true, article: all[idx] };
-    }
-    throw new Error('Article not found to update');
+  } catch (error) {}
+
+  const all = getLocalArticles();
+  const idx = all.findIndex(a => a.id === id);
+  if (idx !== -1) {
+    all[idx] = { ...all[idx], ...articleData };
+    saveLocalArticles(all);
+    return { success: true, article: all[idx] };
   }
+  throw new Error('Article not found to update');
 }
 
 export async function deleteArticle(id) {
+  // Sync to Cloud Firestore in background
+  deleteArticleFromFirestore(id).catch(() => null);
+
   try {
     const response = await axios.delete(`${API_BASE}/articles/${id}`);
     if (isJsonResponse(response) && response.data.success) {
       return response.data;
     }
-    throw new Error('Invalid response');
-  } catch (error) {
-    const all = getLocalArticles();
-    const filtered = all.filter(a => a.id !== id);
-    saveLocalArticles(filtered);
-    return { success: true, message: 'Article deleted from local storage' };
-  }
+  } catch (error) {}
+
+  const all = getLocalArticles();
+  const filtered = all.filter(a => a.id !== id);
+  saveLocalArticles(filtered);
+  return { success: true, message: 'Article deleted successfully' };
 }
 
 export async function reactToArticle(id, type) {
+  // Sync reaction to Cloud Firestore in background
+  incrementReactionInFirestore(id, type).catch(() => null);
+
   try {
     const response = await axios.post(`${API_BASE}/articles/${id}/react`, { type });
     if (isJsonResponse(response) && response.data.success) {
       return response.data;
     }
-    throw new Error('Invalid response');
-  } catch (error) {
-    const all = getLocalArticles();
-    const art = all.find(a => a.id === id);
-    if (art) {
-      art.reactions = art.reactions || { fire: 0, shock: 0, laugh: 0, sad: 0, popcorn: 0 };
-      art.reactions[type] = (art.reactions[type] || 0) + 1;
-      saveLocalArticles(all);
-      return { success: true, reactions: art.reactions };
-    }
-    throw new Error('Article not found');
+  } catch (error) {}
+
+  const all = getLocalArticles();
+  const art = all.find(a => a.id === id);
+  if (art) {
+    art.reactions = art.reactions || { fire: 0, shock: 0, laugh: 0, sad: 0, popcorn: 0 };
+    art.reactions[type] = (art.reactions[type] || 0) + 1;
+    saveLocalArticles(all);
+    return { success: true, reactions: art.reactions };
   }
+  throw new Error('Article not found');
 }
 
 export async function runCrawler({ sourceId, limitPerSource = 3 } = {}) {
@@ -211,6 +246,12 @@ export async function runCrawler({ sourceId, limitPerSource = 3 } = {}) {
     if (newlyDiscovered.length > 0) {
       const updated = [...newlyDiscovered, ...all];
       saveLocalArticles(updated);
+
+      // Persist newly discovered articles to Cloud Firestore
+      for (const art of newlyDiscovered) {
+        saveArticleToFirestore(art).catch(() => null);
+      }
+
       return {
         success: true,
         message: `AI Live Crawler successfully discovered and ingested ${newlyDiscovered.length} fresh real-time entertainment stories from the internet!`,
