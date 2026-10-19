@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Indic script dynamic font helpers */
+.lang-te {
+  font-family: 'Noto Sans Telugu', system-ui, sans-serif;
+  line-height: 1.7;
+}
+
+.lang-hi {
+  font-family: 'Noto Sans Devanagari', system-ui, sans-serif;
+  line-height: 1.65;
+}
+
+.lang-ta {
+  font-family: 'Noto Sans Tamil', system-ui, sans-serif;
+  line-height: 1.7;
+}
+
+.lang-en {
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #e11d48;
+}
+
+/* Cinema Glow Effects */
+.cinema-glow {
+  box-shadow: 0 0 25px -5px rgba(225, 29, 72, 0.35);
+}
+
+.gold-glow {
+  box-shadow: 0 0 20px -5px rgba(245, 158, 11, 0.35);
+}
+
+/* Shimmer animation */
+@keyframes pulse-fast {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.05); }
+}
+
+.animate-pulse-fast {
+  animation: pulse-fast 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

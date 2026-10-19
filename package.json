@@ -1,0 +1,46 @@
+{
+  "name": "janatatv.in",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "server": "node server/index.js",
+    "client": "vite",
+    "dev": "concurrently \"node server/index.js\" \"vite\"",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "movie-news",
+    "celebrity-gossip",
+    "telugu-cinema",
+    "bollywood",
+    "ai-agent",
+    "multilingual-news"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "JanataTV - High-Velocity Movie News & Celebrity Gossip with AI Local Language Translation",
+  "dependencies": {
+    "axios": "^1.20.0",
+    "cheerio": "^1.1.0",
+    "clsx": "^2.1.1",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0",
+    "lucide-react": "^1.59.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tailwind-merge": "^3.7.0",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.6.1",
+    "concurrently": "^9.2.5",
+    "postcss": "^8.5.30",
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.4.4"
+  }
+}
