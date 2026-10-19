@@ -1,5 +1,5 @@
-import React from 'react';
-import { Sparkles, ExternalLink, Info } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { Sparkles, ExternalLink, Info, DollarSign } from 'lucide-react';
 
 /**
  * Standard High-Yield Ad Placements for Entertainment & Gossip Media
@@ -14,8 +14,39 @@ export default function AdBanner({
   slotId = 'demo-slot', 
   sponsorName = '',
   sponsorUrl = '',
-  sponsorImage = ''
+  sponsorImage = '',
+  publisherId = ''
 }) {
+  const activePubId = publisherId || (typeof window !== 'undefined' ? window.__JANATATV_PUB_ID__ : '');
+  const isRealAdSense = activePubId && activePubId.startsWith('ca-pub-') && !activePubId.includes('DEMO');
+
+  useEffect(() => {
+    if (isRealAdSense && typeof window !== 'undefined') {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (e) {
+        console.warn('AdSense push error:', e);
+      }
+    }
+  }, [isRealAdSense, type]);
+
+  // If real Google AdSense Publisher ID is active
+  if (isRealAdSense) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 my-4 flex justify-center overflow-hidden">
+        <ins 
+          className="adsbygoogle"
+          style={{ display: 'block', textAlign: 'center' }}
+          data-ad-client={activePubId}
+          data-ad-slot={slotId || '1234567890'}
+          data-ad-format={type === 'leaderboard' ? 'horizontal' : type === 'in-article' ? 'rectangle' : 'auto'}
+          data-full-width-responsive="true"
+        />
+      </div>
+    );
+  }
+
+  // Interactive Sponsor / Fallback Display Units
   if (type === 'leaderboard') {
     return (
       <div className="max-w-7xl mx-auto px-4 my-4">
@@ -33,7 +64,7 @@ export default function AdBanner({
                 {sponsorName || 'BookMyShow & Movie Premiere Sponsor'}
               </div>
               <div className="text-sm font-extrabold text-white">
-                Book Pushpa 2 & Game Changer Theatrical Advance Tickets
+                Book Pushpa 2 &amp; Game Changer Theatrical Advance Tickets
               </div>
               <div className="text-[11px] text-slate-400">
                 Get up to 50% cashback on JanataTV exclusive cinema coupon codes!
@@ -76,7 +107,7 @@ export default function AdBanner({
               Watch Unlimited South Indian Blockbusters in 4K HDR
             </h4>
             <p className="text-xs text-slate-400">
-              Stream the latest Tollywood & Bollywood gossip exclusives on your TV screen.
+              Stream the latest Tollywood &amp; Bollywood gossip exclusives on your TV screen.
             </p>
             <div className="pt-1">
               <a

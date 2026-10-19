@@ -39,6 +39,36 @@ export async function fetchArticleById(id) {
   }
 }
 
+export async function createArticle(articleData) {
+  try {
+    const response = await axios.post(`${API_BASE}/articles`, articleData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating article:', error);
+    throw error;
+  }
+}
+
+export async function updateArticle(id, articleData) {
+  try {
+    const response = await axios.put(`${API_BASE}/articles/${id}`, articleData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating article:', error);
+    throw error;
+  }
+}
+
+export async function deleteArticle(id) {
+  try {
+    const response = await axios.delete(`${API_BASE}/articles/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting article:', error);
+    throw error;
+  }
+}
+
 export async function reactToArticle(id, type) {
   try {
     const response = await axios.post(`${API_BASE}/articles/${id}/react`, { type });

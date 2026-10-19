@@ -177,6 +177,22 @@ app.post('/api/agent/localize-custom', async (req, res) => {
   }
 });
 
+// Create New Article
+app.post('/api/articles', (req, res) => {
+  const articleData = req.body;
+  if (!articleData.id) {
+    articleData.id = 'art-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+  }
+  if (!articleData.publishedAt) {
+    articleData.publishedAt = new Date().toISOString();
+  }
+  if (!articleData.reactions) {
+    articleData.reactions = { fire: 0, shock: 0, laugh: 0, sad: 0, popcorn: 0 };
+  }
+  const created = db.saveArticle(articleData);
+  res.status(201).json({ success: true, article: created });
+});
+
 // Update Article (Edit headline, status, etc.)
 app.put('/api/articles/:id', (req, res) => {
   const article = db.getArticleById(req.params.id);
@@ -195,6 +211,14 @@ app.delete('/api/articles/:id', (req, res) => {
     return res.status(404).json({ success: false, message: 'Article not found' });
   }
   res.json({ success: true, message: 'Article deleted successfully' });
+});
+
+// Serve ads.txt dynamically for Google AdSense verification
+app.get('/ads.txt', (req, res) => {
+  const settings = db.getSettings();
+  const pubId = (settings.adSensePublisherId || 'pub-XXXXXXXXXXXXXXXX').replace(/^ca-/, '');
+  res.header('Content-Type', 'text/plain');
+  res.send(`# Google AdSense Authorized Digital Sellers (ads.txt)\ngoogle.com, ${pubId}, DIRECT, f08c47fec0942fa0\n`);
 });
 
 // Stats
