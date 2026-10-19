@@ -34,6 +34,7 @@ export default function AdminStudio({ onClose, onDataRefresh, currentLang = 'te'
   const [customContent, setCustomContent] = useState('');
   const [customCategory, setCustomCategory] = useState('Tollywood');
   const [isProcessingCustom, setIsProcessingCustom] = useState(false);
+  const [customResult, setCustomResult] = useState(null);
   // Settings State
   const [settings, setSettings] = useState(null);
   const [settingsSaved, setSettingsSaved] = useState(false);
