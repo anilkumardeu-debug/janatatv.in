@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { FALLBACK_ARTICLES } from './fallbackData';
+import { crawlLiveWebFeeds } from './clientCrawler';
 
 const API_BASE = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) || '/api';
 
@@ -203,69 +204,27 @@ export async function runCrawler({ sourceId, limitPerSource = 3 } = {}) {
     }
     throw new Error('Invalid response');
   } catch (error) {
+    console.log('[API] Backend unavailable or static host, executing Live Web Feed Ingestion in browser...');
     const all = getLocalArticles();
-    const freshStory = {
-      id: `art-${Date.now()}-crawler`,
-      originalTitle: `Devara Part 2 Script Locked: Koratala Siva Prepares High-Octane Underwater War Sequence with Jr NTR!`,
-      sourceName: "Tollywood Radar Wire",
-      category: "Tollywood",
-      imageUrl: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200&auto=format&fit=crop",
-      publishedAt: new Date().toISOString(),
-      viralityScore: 96,
-      tags: ["#Devara2", "#JrNTR", "#KoratalaSiva", "#TollywoodBoxOffice"],
-      reactions: { fire: 340, shock: 180, laugh: 15, sad: 2, popcorn: 290 },
-      status: "published",
-      localized: {
-        te: {
-          title: "దేవర 2 స్క్రిప్ట్ లాక్: జూనియర్ ఎన్టీఆర్ తో కొరటాల శివ పవర్ ప్యాక్డ్ అండర్ వాటర్ యాక్షన్ సీక్వెన్స్!",
-          subtitle: "రెండో భాగంలో విలనిజం పీక్స్.. తారక్ ఫ్యాన్స్ కు గూస్‌బంప్స్ ఖాయం!",
-          tldr: [
-            "దేవర పార్ట్ 2 ప్రీ-ప్రొడక్షన్ పనులు శరవేగంగా ప్రారంభమయ్యాయి.",
-            "కొరటాల శివ అండర్ వాటర్ యాక్షన్ సీన్ కోసం హాలీవుడ్ స్టంట్ మాస్టర్లను రంగంలోకి దించుతున్నారు.",
-            "2026 ప్రథమార్ధంలో సినిమా సెట్స్ పైకి వెళ్లనుంది."
-          ],
-          content: `మాస్ కా దాస్ జూనియర్ ఎన్టీఆర్ 'దేవర' పార్ట్ 1 తో బాక్సాఫీస్ వద్ద సృష్టించిన సునామీ అందరికీ తెలిసిందే. ఇప్పుడు అందరి దృష్టి 'దేవర పార్ట్ 2' పై పడింది. దర్శకుడు కొరటాల శివ ఈ చిత్రానికి సంబంధించిన ఫుల్ స్క్రిప్ట్ ని లాక్ చేసినట్లు తాజా సమాచారం.\n\nఈ సీక్వెల్ లో వచ్చే అండర్ వాటర్ యాక్షన్ బ్లాక్ ఇండియన్ సినిమాలో మునుపెన్నడూ చూడని విధంగా ఉండబోతోందట. ఈ సీన్ కోసం అంతర్జాతీయ టెక్నీషియన్లను రంగంలోకి దించుతున్నారు. తారక్ మరియు సైఫ్ అలీ ఖాన్ మధ్య వచ్చే క్లైమాక్స్ సన్నివేశాలు థియేటర్లలో ప్రేక్షకులకు రోమాలు నిక్కబొడుచుకునే అనుభూతిని ఇస్తాయని ఫిలింనగర్ టాక్!`,
-          whatsappShareText: `🔥 *జనతా టీవీ బ్రేకింగ్:* దేవర 2 స్క్రిప్ట్ లాక్.. జూనియర్ ఎన్టీఆర్ అండర్ వాటర్ వార్!\n\n👉 పూర్తి వివరాలు: https://janatatv.in\n\n#Devara2 #JrNTR`
-        },
-        hi: {
-          title: "देवरा पार्ट 2 की स्क्रिप्ट फाइनल: जूनियर एनटीआर के साथ होगा धमाकेदार अंडरवाटर एक्शन सीन!",
-          subtitle: "कोराताला शिवा ने कसी कमर, हॉलीवुड एक्शन डायरेक्टर्स की होगी एंट्री!",
-          tldr: [
-            "देवरा 2 का प्री-प्रोडक्शन तेजी से शुरू हो चुका है।",
-            "अंडरवाटर वॉर सीक्वेंस भारतीय सिनेमा का सबसे बड़ा एक्शन सीन होने वाला है।"
-          ],
-          content: `जूनियर एनटीआर स्टारर फिल्म 'देवरा' की ऐतिहासिक बॉक्स ऑफिस सफलता के बाद डायरेक्टर कोराताला शिवा ने देवरा पार्ट 2 की पटकथा को पूरी तरह से फाइनल कर लिया है। बताया जा रहा है कि फिल्म में एक विशाल अंडरवाटर वॉर सीक्वेंस तैयार किया गया है, जिसके लिए इंटरनेशनल स्टंट कोरियोग्राफर्स को बुलाया गया है।`,
-          whatsappShareText: `🔥 *जनता टीवी एक्सक्लूसिव:* देवरा 2 स्क्रिप्ट फाइनल!\n\n👉 https://janatatv.in\n\n#Devara2`
-        },
-        ta: {
-          title: "தேவரா பார்ட் 2 திரைக்கதை தயார்: ஜூனியர் என்டிஆர் நடிப்பில் மிரட்டலான ஆக்ஷன் காட்சி!",
-          subtitle: "ஹாலிவுட் ஸ்டண்ட் மாஸ்டர்களுடன் இணையும் கொரட்டலா சிவா!",
-          tldr: [
-            "தேவரா 2 படத்தின் பணிகள் விறுவிறுப்பாக தொடங்கிவிட்டன."
-          ],
-          content: `ஜூனியர் என்டிஆரின் பிரம்மாண்ட வெற்றியான 'தேவரா' திரைப்படத்தின் இரண்டாம் பாகத்திற்கான முழு திரைக்கதையும் தற்போது இறுதி செய்யப்பட்டுள்ளது!`,
-          whatsappShareText: `🔥 *ஜனதா டிவி:* தேவரா பார்ட் 2 அப்டேட்!\n\n👉 https://janatatv.in`
-        },
-        en: {
-          title: "Devara Part 2 Script Locked: Koratala Siva Prepares High-Octane Underwater War Sequence with Jr NTR!",
-          subtitle: "Hollywood stunt choreographers onboarded for pathbreaking action spectacle.",
-          tldr: [
-            "Scripting for Devara sequel officially wrapped up.",
-            "Massive underwater war scene to be shot on international waters."
-          ],
-          content: `Following the roaring blockbuster run of Devara Part 1, director Koratala Siva has reportedly locked the definitive screenplay for Devara 2. Sources reveal a sensational 25-minute underwater combat set-piece designed to push contemporary action boundaries.`,
-          whatsappShareText: `🔥 *JanataTV Gossip:* Devara Part 2 Script Locked!\n\n👉 https://janatatv.in`
-        }
-      }
-    };
-    all.unshift(freshStory);
-    saveLocalArticles(all);
-    return {
-      success: true,
-      message: 'AI Ingestion Agent successfully discovered new viral cinema scoops and localized them!',
-      newArticlesCount: 1,
-      totalArticles: all.length
-    };
+    const newlyDiscovered = await crawlLiveWebFeeds(all);
+
+    if (newlyDiscovered.length > 0) {
+      const updated = [...newlyDiscovered, ...all];
+      saveLocalArticles(updated);
+      return {
+        success: true,
+        message: `AI Live Crawler successfully discovered and ingested ${newlyDiscovered.length} fresh real-time entertainment stories from the internet!`,
+        newArticlesCount: newlyDiscovered.length,
+        totalArticles: updated.length
+      };
+    } else {
+      return {
+        success: true,
+        message: `AI Live Crawler checked 5 entertainment wires. All latest stories are already in your database!`,
+        newArticlesCount: 0,
+        totalArticles: all.length
+      };
+    }
   }
 }
 
