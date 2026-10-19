@@ -32,6 +32,7 @@ export default function App() {
   const [adminTab, setAdminTab] = useState('dashboard');
   const [editingArticle, setEditingArticle] = useState(null);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
+  const [legalModalTab, setLegalModalTab] = useState('privacy');
   const [showCrawlerModal, setShowCrawlerModal] = useState(false);
   const [isCrawling, setIsCrawling] = useState(false);
 
@@ -409,23 +410,44 @@ export default function App() {
           </div>
 
           <div>
-            <h4 className="font-bold text-slate-200 uppercase tracking-wider mb-2.5">Monetization &amp; Links</h4>
-            <div className="flex flex-col space-y-1.5">
-              <a href="/sitemap.xml" target="_blank" rel="noreferrer" className="hover:text-amber-400">Google News Sitemap (/sitemap.xml)</a>
-              <a href="/ads.txt" target="_blank" rel="noreferrer" className="hover:text-amber-400">Authorized Sellers (/ads.txt)</a>
-              <a href="/feed.xml?lang=te" target="_blank" rel="noreferrer" className="hover:text-amber-400">Multilingual RSS Feed</a>
-              <button onClick={() => setShowPrivacyPolicy(true)} className="text-left hover:text-amber-400 flex items-center gap-1">
+            <h4 className="font-bold text-slate-200 uppercase tracking-wider mb-2.5">Editorial &amp; Legal</h4>
+            <div className="flex flex-col space-y-1.5 text-xs">
+              <button 
+                onClick={() => { setLegalModalTab('about'); setShowPrivacyPolicy(true); }} 
+                className="text-left hover:text-rose-400"
+              >
+                About JanataTV Media
+              </button>
+              <button 
+                onClick={() => { setLegalModalTab('contact'); setShowPrivacyPolicy(true); }} 
+                className="text-left hover:text-amber-400"
+              >
+                Contact &amp; Grievances
+              </button>
+              <button 
+                onClick={() => { setLegalModalTab('privacy'); setShowPrivacyPolicy(true); }} 
+                className="text-left hover:text-emerald-400 flex items-center gap-1"
+              >
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Privacy &amp; Cookie Policy (AdSense)</span>
+              </button>
+              <button 
+                onClick={() => { setLegalModalTab('terms'); setShowPrivacyPolicy(true); }} 
+                className="text-left hover:text-purple-400"
+              >
+                Terms of Service &amp; Disclaimer
               </button>
             </div>
           </div>
 
           <div>
-            <h4 className="font-bold text-slate-200 uppercase tracking-wider mb-2.5">Legal &amp; Attribution</h4>
-            <p className="text-slate-500 leading-relaxed">
-              © {new Date().getFullYear()} JanataTV Media Network. All trademarks and celebrity images belong to their respective copyright holders.
-            </p>
+            <h4 className="font-bold text-slate-200 uppercase tracking-wider mb-2.5">Monetization &amp; Crawlers</h4>
+            <div className="flex flex-col space-y-1.5 text-xs">
+              <a href="/sitemap.xml" target="_blank" rel="noreferrer" className="hover:text-amber-400">Google News Sitemap (/sitemap.xml)</a>
+              <a href="/robots.txt" target="_blank" rel="noreferrer" className="hover:text-amber-400">Search Engine Directives (/robots.txt)</a>
+              <a href="/ads.txt" target="_blank" rel="noreferrer" className="hover:text-amber-400">Authorized Sellers (/ads.txt)</a>
+              <a href="/feed.xml?lang=te" target="_blank" rel="noreferrer" className="hover:text-amber-400">Multilingual RSS Feed</a>
+            </div>
           </div>
         </div>
       </footer>
@@ -440,9 +462,12 @@ export default function App() {
         />
       )}
 
-      {/* Privacy Policy Modal */}
+      {/* Privacy Policy & Transparency Center Modal */}
       {showPrivacyPolicy && (
-        <PrivacyPolicyModal onClose={() => setShowPrivacyPolicy(false)} />
+        <PrivacyPolicyModal 
+          onClose={() => setShowPrivacyPolicy(false)} 
+          defaultTab={legalModalTab}
+        />
       )}
 
       {/* Sticky Mobile Bottom Anchor Banner (100% Viewability & Guaranteed High CPM) */}
