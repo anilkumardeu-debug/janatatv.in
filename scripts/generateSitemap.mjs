@@ -3,6 +3,17 @@ import fs from 'fs';
 const articles = JSON.parse(fs.readFileSync('server/storage/articles.json', 'utf8'));
 const now = new Date().toISOString().split('T')[0];
 
+function formatW3CDate(dateStr) {
+  if (!dateStr) return now;
+  try {
+    const d = new Date(typeof dateStr === 'string' ? dateStr.trim() : dateStr);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().split('T')[0];
+    }
+  } catch (e) {}
+  return now;
+}
+
 let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -68,7 +79,7 @@ let xml = `<?xml version="1.0" encoding="UTF-8"?>
 `;
 
 articles.slice(0, 50).forEach(art => {
-  const artDate = art.publishedAt ? art.publishedAt.split('T')[0] : now;
+  const artDate = formatW3CDate(art.publishedAt);
   xml += `  <url>
     <loc>https://janatatv.in/?article=${encodeURIComponent(art.id)}</loc>
     <lastmod>${artDate}</lastmod>
@@ -81,4 +92,4 @@ articles.slice(0, 50).forEach(art => {
 xml += '</urlset>\n';
 
 fs.writeFileSync('public/sitemap.xml', xml);
-console.log('Successfully generated public/sitemap.xml with ' + (articles.length + 10) + ' URLs');
+console.log('Successfully generated W3C compliant public/sitemap.xml with ' + (articles.length + 10) + ' URLs');
