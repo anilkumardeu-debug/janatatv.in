@@ -37,7 +37,7 @@ function saveLocalArticles(articles) {
 
 function getLocalSettings() {
   const defaults = {
-    adSensePublisherId: '',
+    adSensePublisherId: 'ca-pub-6908323709317289',
     taboolaEnabled: true,
     inArticleAdsEnabled: true,
     mobileAnchorEnabled: true,

@@ -15,7 +15,7 @@ import { fetchSettings, updateSettings } from '../../services/api';
 
 export default function GoogleAdsManager() {
   const [settings, setSettings] = useState({
-    adSensePublisherId: '',
+    adSensePublisherId: 'ca-pub-6908323709317289',
     taboolaEnabled: true,
     inArticleAdsEnabled: true,
     mobileAnchorEnabled: true,
