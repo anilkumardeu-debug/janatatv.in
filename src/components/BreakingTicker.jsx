@@ -48,10 +48,10 @@ export default function BreakingTicker({ articles = [], currentLang = 'te', onSe
           <ChevronRight className="w-3.5 h-3.5 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity ml-1 shrink-0" />
         </div>
 
-        {/* Virality Tag */}
-        <div className="hidden md:flex items-center space-x-1.5 text-rose-300 font-semibold text-[11px] shrink-0 bg-rose-900/30 px-2 py-0.5 rounded border border-rose-800/40">
-          <Flame className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
-          <span>{currentItem.viralityScore}% Buzz</span>
+        {/* Live Update Tag */}
+        <div className="hidden md:flex items-center space-x-1.5 text-slate-300 font-medium text-[11px] shrink-0 bg-slate-900/80 px-2.5 py-0.5 rounded border border-slate-800">
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
+          <span>Live Wire Update</span>
         </div>
       </div>
     </div>

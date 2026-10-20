@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flame, Clock, Share2, MessageCircle, Heart, Bookmark } from 'lucide-react';
+import { Clock, Share2, MessageCircle, Heart, Bookmark, FileText } from 'lucide-react';
 
 export default function ArticleCard({ article, currentLang = 'te', onSelectArticle, onQuickReact }) {
   const loc = article.localized?.[currentLang] || article.localized?.['en'];
@@ -9,7 +9,7 @@ export default function ArticleCard({ article, currentLang = 'te', onSelectArtic
 
   const handleShareWhatsApp = (e) => {
     e.stopPropagation();
-    const shareText = loc?.whatsappShareText || `🔥 ${title} - Read more on JanataTV: https://janatatv.in`;
+    const shareText = loc?.whatsappShareText || `📰 ${title} - Read on JanataTV: https://janatatv.in`;
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
     window.open(url, '_blank');
   };
@@ -37,17 +37,16 @@ export default function ArticleCard({ article, currentLang = 'te', onSelectArtic
             </span>
           </div>
 
-          {/* Virality Score */}
+          {/* Reading Time Badge */}
           <div className="absolute top-3 right-3">
-            <span className="flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-black/70 backdrop-blur-md text-amber-400 border border-amber-400/30">
-              <Flame className="w-3 h-3 mr-1 fill-amber-400" />
-              {article.viralityScore}%
+            <span className="flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/70 backdrop-blur-md text-slate-300 border border-white/10">
+              <Clock className="w-3 h-3 mr-1 text-rose-400" />
+              2 min read
             </span>
           </div>
 
-          {/* Reading Time */}
-          <div className="absolute bottom-2 left-3 text-[11px] text-slate-300 flex items-center bg-black/40 px-2 py-0.5 rounded backdrop-blur-sm">
-            <Clock className="w-3 h-3 mr-1 text-slate-400" />
+          {/* Published Dateline */}
+          <div className="absolute bottom-2 left-3 text-[11px] text-slate-300 flex items-center bg-black/50 px-2 py-0.5 rounded backdrop-blur-sm">
             {new Date(article.publishedAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
           </div>
         </div>
@@ -82,25 +81,20 @@ export default function ArticleCard({ article, currentLang = 'te', onSelectArtic
         </div>
       </div>
 
-      {/* Card Footer: Reactions & WhatsApp Action */}
+      {/* Card Footer: Byline & WhatsApp Action */}
       <div className="px-4 py-3 border-t border-slate-800/80 bg-slate-950/40 flex items-center justify-between text-xs">
-        {/* Reactions Counter */}
-        <div className="flex items-center space-x-2 text-slate-400">
-          <span className="hover:text-rose-400 transition-colors flex items-center">
-            🔥 <span className="ml-1 text-[11px] font-bold">{article.reactions?.fire || 0}</span>
-          </span>
-          <span className="hover:text-amber-400 transition-colors flex items-center">
-            🍿 <span className="ml-1 text-[11px] font-bold">{article.reactions?.popcorn || 0}</span>
-          </span>
-        </div>
+        {/* Byline */}
+        <span className="text-[11px] text-slate-400 font-medium">
+          JanataTV Bureau
+        </span>
 
         {/* Quick WhatsApp Share Button */}
         <button
           onClick={handleShareWhatsApp}
-          className="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-600/40 text-emerald-300 hover:text-emerald-200 transition-all font-semibold text-[11px]"
+          className="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-slate-800 hover:bg-emerald-950 border border-slate-700 hover:border-emerald-600/40 text-slate-300 hover:text-emerald-300 transition-all font-semibold text-[11px]"
           title="Share to WhatsApp"
         >
-          <MessageCircle className="w-3.5 h-3.5 fill-current" />
+          <Share2 className="w-3 h-3" />
           <span>Share</span>
         </button>
       </div>

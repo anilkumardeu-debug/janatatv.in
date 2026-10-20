@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flame, Clock, Share2, Sparkles, MessageCircle } from 'lucide-react';
+import { Clock, Share2, Sparkles, User, CheckCircle2 } from 'lucide-react';
 
 export default function HeroFeatured({ articles = [], currentLang = 'te', onSelectArticle }) {
   if (!articles || articles.length === 0) return null;
@@ -16,7 +16,7 @@ export default function HeroFeatured({ articles = [], currentLang = 'te', onSele
         {/* Main Mega Hero Card (8 Cols) */}
         <div 
           onClick={() => onSelectArticle(mainArticle)}
-          className="lg:col-span-8 group relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 hover:border-rose-500/50 transition-all cursor-pointer shadow-2xl cinema-glow flex flex-col justify-end min-h-[420px] md:min-h-[480px]"
+          className="lg:col-span-8 group relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 hover:border-rose-500/50 transition-all cursor-pointer shadow-2xl flex flex-col justify-end min-h-[420px] md:min-h-[480px]"
         >
           {/* Background Image & Overlay */}
           <img
@@ -28,18 +28,18 @@ export default function HeroFeatured({ articles = [], currentLang = 'te', onSele
 
           {/* Content Over Image */}
           <div className="relative z-10 p-5 md:p-8 space-y-3">
-            {/* Top Badges */}
+            {/* Top Journalistic Metadata */}
             <div className="flex flex-wrap items-center gap-2">
               <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-600 text-white shadow-md">
                 {mainArticle.category}
               </span>
-              <span className="flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-400 text-slate-950 shadow-md">
-                <Flame className="w-3.5 h-3.5 mr-1 fill-current" />
-                {mainArticle.viralityScore}% Viral Buzz
+              <span className="flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-900/90 text-slate-200 border border-slate-700 shadow-md">
+                <CheckCircle2 className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+                Verified Trade Report
               </span>
-              <span className="hidden sm:inline-flex items-center text-xs text-slate-300 bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/10">
-                <Clock className="w-3 h-3 mr-1" />
-                {new Date(mainArticle.publishedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              <span className="hidden sm:inline-flex items-center text-xs text-slate-300 bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/10">
+                <Clock className="w-3 h-3 mr-1 text-rose-400" />
+                3 min read • {new Date(mainArticle.publishedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
 
@@ -55,18 +55,11 @@ export default function HeroFeatured({ articles = [], currentLang = 'te', onSele
               {mainLoc?.subtitle || mainLoc?.tldr?.[0] || mainArticle.originalTitle}
             </p>
 
-            {/* Bottom Actions & Reactions */}
+            {/* Bottom Actions & Editorial Byline */}
             <div className="pt-2 flex items-center justify-between border-t border-white/10 text-xs text-slate-300">
-              <div className="flex items-center space-x-3">
-                <span className="flex items-center text-rose-400 font-semibold">
-                  🔥 {mainArticle.reactions?.fire || 120}
-                </span>
-                <span className="flex items-center text-amber-300 font-semibold">
-                  🍿 {mainArticle.reactions?.popcorn || 80}
-                </span>
-                <span className="flex items-center text-sky-400 font-semibold">
-                  😱 {mainArticle.reactions?.shock || 45}
-                </span>
+              <div className="flex items-center space-x-2 text-slate-400">
+                <User className="w-3.5 h-3.5 text-rose-400" />
+                <span>By JanataTV Film Bureau • Hyderabad</span>
               </div>
               <span className="text-rose-400 group-hover:translate-x-1 transition-transform font-bold inline-flex items-center text-xs">
                 {currentLang === 'te' ? 'పూర్తి కథనం చదవండి →' :
@@ -82,11 +75,11 @@ export default function HeroFeatured({ articles = [], currentLang = 'te', onSele
           <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
             <span className="flex items-center text-rose-400">
               <Sparkles className="w-3.5 h-3.5 mr-1" />
-              {currentLang === 'te' ? 'టాప్ ట్రెండింగ్ గాసిప్స్' :
-               currentLang === 'hi' ? 'टॉप ट्रेंडिंग गॉसिप्स' :
-               currentLang === 'ta' ? 'டிரெண்டிங் செய்திகள்' : 'Trending Scoops'}
+              {currentLang === 'te' ? 'తాజా ప్రధాన వార్తలు' :
+               currentLang === 'hi' ? 'प्रमुख सिनेमा खबरें' :
+               currentLang === 'ta' ? 'முக்கிய சினிமா செய்திகள்' : 'Top Stories'}
             </span>
-            <span className="text-slate-500">JanataTV Hot Radar</span>
+            <span className="text-slate-500 text-[11px]">Trade Wire</span>
           </div>
 
           {sideArticles.map((art) => {
@@ -116,9 +109,8 @@ export default function HeroFeatured({ articles = [], currentLang = 'te', onSele
                 </div>
 
                 <div className="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
-                  <span className="flex items-center text-amber-400 font-semibold">
-                    <Flame className="w-3 h-3 mr-1" />
-                    {art.viralityScore}% Buzz
+                  <span className="text-slate-400">
+                    By Entertainment Desk
                   </span>
                   <span className="text-slate-500">
                     {new Date(art.publishedAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
