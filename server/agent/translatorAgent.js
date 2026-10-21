@@ -218,36 +218,41 @@ With fan excitement hitting peak fever pitch, all eyes are on the upcoming offic
 
 function generateTeluguHeadline(englishTitle, celebTelugu) {
   const t = englishTitle.toLowerCase();
+  const clean = englishTitle.replace(/\|.*$/, '').replace(/ - .*$/, '').trim();
   if (t.includes('box office') || t.includes('collection') || t.includes('crore')) {
-    return `${celebTelugu} బాక్సాఫీస్ రికార్డుల వేట.. తాజా కలెక్షన్ల లెక్కలు ఇవే!`;
+    return `${celebTelugu} బాక్సాఫీస్ రిపోర్ట్: కలెక్షన్లపై తాజా ట్రేడ్ వివరాలు!`;
   }
   if (t.includes('trailer') || t.includes('teaser') || t.includes('first look')) {
-    return `${celebTelugu} టీజర్/ట్రైలర్ సెన్సేషన్.. నెట్టింట వ్యూస్ సునామీ!`;
+    return `${celebTelugu} టీజర్/ట్రైలర్ సెన్సేషన్: సోషల్ మీడియాలో భారీ స్పందన!`;
   }
-  if (t.includes('breakup') || t.includes('dating') || t.includes('spotted') || t.includes('wedding')) {
-    return `${celebTelugu} గురించి బయటపడ్డ హాట్ గాసిప్.. సోషల్ మీడియాలో తీవ్ర చర్చ!`;
+  if (t.includes('shooting') || t.includes('shoot') || t.includes('schedule')) {
+    return `${celebTelugu} కొత్త సినిమా షూటింగ్ అప్‌డేట్: స్పెషల్ షెడ్యూల్ ప్లాన్!`;
   }
-  if (t.includes('salary') || t.includes('remuneration') || t.includes('budget')) {
-    return `${celebTelugu} పారితోషికంపై సంచలన టాక్.. కళ్లు చెదిరే రెమ్యునరేషన్?`;
+  if (t.includes('incident') || t.includes('police') || t.includes('fir')) {
+    return `${celebTelugu} విషయంలో సంచలన పరిణామం: పోలీసుల ముమ్మర దర్యాప్తు!`;
   }
-  return `${celebTelugu} పై ఇండస్ట్రీలో తాజా హాట్ బజ్.. షాకింగ్ ట్విస్ట్!`;
+  if (t.includes('release date') || t.includes('postponed')) {
+    return `${celebTelugu} సినిమా రిలీజ్ డేట్ అప్‌డేట్: సరికొత్త ప్రకటన!`;
+  }
+  if (clean.length < 75) {
+    return `${celebTelugu}: ${clean}`;
+  }
+  return `${celebTelugu} తాజా అప్‌డేట్: ఇండస్ట్రీ వర్గాల్లో ప్రత్యేక చర్చ!`;
 }
 
 function generateHindiHeadline(englishTitle, celebHindi) {
   const t = englishTitle.toLowerCase();
+  const clean = englishTitle.replace(/\|.*$/, '').replace(/ - .*$/, '').trim();
   if (t.includes('box office') || t.includes('collection') || t.includes('crore')) {
-    return `${celebHindi} की फिल्म का बॉक्स ऑफिस पर बंपर कलेक्शन, बने नए रिकॉर्ड्स!`;
+    return `${celebHindi} बॉक्स ऑफिस रिपोर्ट: जानें ताजा कलेक्शन और रिकॉर्ड्स!`;
   }
   if (t.includes('trailer') || t.includes('teaser') || t.includes('first look')) {
-    return `${celebHindi} का धमाकेदार टीजर आउट, इंटरनेट पर आया तूफान!`;
+    return `${celebHindi} का धमाकेदार टीजर आउट, फैंस में भारी उत्साह!`;
   }
-  if (t.includes('breakup') || t.includes('dating') || t.includes('spotted') || t.includes('wedding')) {
-    return `${celebHindi} को लेकर सामने आई बड़ी गॉसिप, सोशल मीडिया पर चर्चा तेज!`;
+  if (clean.length < 75) {
+    return `${celebHindi}: ${clean}`;
   }
-  if (t.includes('salary') || t.includes('remuneration') || t.includes('budget')) {
-    return `${celebHindi} की फीस को लेकर बड़ा खुलासा, जानकर उड़ जाएंगे होश!`;
-  }
-  return `${celebHindi} को लेकर फिल्म इंडस्ट्री में हलचल, जानें क्या है पूरा मामला!`;
+  return `${celebHindi} को लेकर बड़ी खबर, फिल्म इंडस्ट्री में चर्चा तेज!`;
 }
 
 /**

@@ -11,8 +11,8 @@ import {
 
 const API_BASE = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) || '/api';
 
-const STORAGE_ARTICLES_KEY = 'janatatv_articles_v1';
-const STORAGE_SETTINGS_KEY = 'janatatv_settings_v1';
+const STORAGE_ARTICLES_KEY = 'janatatv_articles_v3';
+const STORAGE_SETTINGS_KEY = 'janatatv_settings_v3';
 
 function getLocalArticles() {
   if (typeof window === 'undefined') return [...FALLBACK_ARTICLES];
@@ -24,7 +24,12 @@ function getLocalArticles() {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed;
+      // Filter out any legacy corrupted template articles
+      const clean = parsed.filter(a => {
+        const t = a.localized?.te?.title || '';
+        return !t.includes('పై ఇండస్ట్రీలో తాజా హాట్ బజ్') && !t.includes('బాక్సాఫీస్ రికార్డుల వేట.. తాజా కలెక్షన్ల');
+      });
+      if (clean.length > 0) return clean;
     }
     localStorage.setItem(STORAGE_ARTICLES_KEY, JSON.stringify(FALLBACK_ARTICLES));
     return [...FALLBACK_ARTICLES];

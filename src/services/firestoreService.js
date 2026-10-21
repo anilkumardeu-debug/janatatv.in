@@ -20,15 +20,24 @@ export async function fetchArticlesFromFirestore({ category = 'All', limit = 50 
   if (!firestoreDb) return null;
   try {
     const colRef = collection(firestoreDb, ARTICLES_COLLECTION);
-    const q = query(colRef, firestoreLimit(limit));
-    const snapshot = await getDocs(q);
+    let snapshot;
+    try {
+      const q = query(colRef, orderBy('publishedAt', 'desc'), firestoreLimit(limit));
+      snapshot = await getDocs(q);
+    } catch (queryErr) {
+      const q = query(colRef, firestoreLimit(limit));
+      snapshot = await getDocs(q);
+    }
 
-    if (snapshot.empty) return null;
+    if (!snapshot || snapshot.empty) return null;
 
     let articles = [];
     snapshot.forEach(docSnap => {
       articles.push({ id: docSnap.id, ...docSnap.data() });
     });
+
+    // Always sort newest first
+    articles.sort((a, b) => new Date(b.publishedAt || 0) - new Date(a.publishedAt || 0));
 
     if (category && category !== 'All') {
       articles = articles.filter(a => a.category?.toLowerCase() === category.toLowerCase());
